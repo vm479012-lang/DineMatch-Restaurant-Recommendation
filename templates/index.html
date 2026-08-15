@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DineMatch | Discover restaurants made for you.</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    
+    <nav class="navbar fade-up">
+        <a href="/" class="nav-brand">
+            <i data-lucide="utensils" class="brand-icon" style="color: var(--primary);"></i>
+            DineMatch
+        </a>
+        <button class="mobile-menu-btn"><i data-lucide="menu"></i></button>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#about">About</a>
+            <a href="#find" class="btn-primary">Find Restaurants</a>
+        </div>
+    </nav>
+
+    <section class="hero container home-page fade-up" style="animation-delay: 0.1s;">
+        <div class="hero-grid">
+            <div class="hero-content">
+                <div class="pill">✦ AI-Powered Restaurant Discovery</div>
+                <h1 class="hero-title">Find Your<br><span class="text-highlight">Perfect Restaurant.</span></h1>
+                <p class="hero-desc">Tell us what you're craving, where you're dining, and what fits your budget. DineMatch finds restaurants that match your preferences.</p>
+                <div class="hero-actions">
+                    <a href="#find" class="btn btn-primary btn-large">Find My Restaurant</a>
+                    <a href="#how-it-works" class="btn btn-secondary btn-large">How It Works <i data-lucide="arrow-down" style="margin-left:8px; width:18px;"></i></a>
+                </div>
+                <div class="trust-indicator">
+                    <i data-lucide="check-circle-2" style="color:var(--sage); width:16px;"></i>
+                    9,500+ restaurants • Smart recommendations • Personalized results
+                </div>
+            </div>
+            <div class="hero-image-wrapper">
+                <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80" alt="Beautiful restaurant interior" class="hero-img">
+                <div class="floating-card float-1">
+                    <span class="fc-val">⭐ 4.8</span>
+                    <span class="fc-lbl">Highly Rated</span>
+                </div>
+                <div class="floating-card float-2">
+                    <span class="fc-val">🎯 96%</span>
+                    <span class="fc-lbl">Perfect Match</span>
+                </div>
+                <div class="floating-card float-3">
+                    <span class="fc-val">📍 Chennai</span>
+                    <span class="fc-lbl">Near You</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="form-section container fade-up" id="find" style="animation-delay: 0.2s;">
+        <div class="search-card">
+            <h2>What are you looking for?</h2>
+            <p>Set your preferences and let DineMatch do the matching.</p>
+
+            <div class="quick-chips">
+                <button type="button" class="chip" data-value="Bubble Tea">🧋 Bubble Tea</button>
+                <button type="button" class="chip" data-value="BBQ">🥩 BBQ</button>
+                <button type="button" class="chip" data-value="Indian">🍛 Indian</button>
+                <button type="button" class="chip" data-value="Italian">🍝 Italian</button>
+                <button type="button" class="chip" data-value="Chinese">🥡 Chinese</button>
+                <button type="button" class="chip" data-value="Seafood">🦐 Seafood</button>
+                <button type="button" class="chip" data-value="Cafe">☕ Café</button>
+                <button type="button" class="chip" data-value="Fast Food">🍔 Fast Food</button>
+            </div>
+
+            <form action="/recommend" method="POST" id="recommendation-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="cuisine">Cuisine</label>
+                        <div class="input-wrapper select-wrapper">
+                            <i data-lucide="utensils-crossed"></i>
+                            <select name="cuisine" id="cuisine">
+                                <option value="Any">Any Cuisine</option>
+                                {% for c in cuisines %}
+                                <option value="{{ c }}">{{ c }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <div class="input-wrapper select-wrapper">
+                            <i data-lucide="map-pin"></i>
+                            <select name="city" id="city">
+                                <option value="Any">Any City</option>
+                                {% for city in cities %}
+                                <option value="{{ city }}">{{ city }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="price_range">Price Range</label>
+                        <div class="input-wrapper select-wrapper">
+                            <i data-lucide="wallet"></i>
+                            <select name="price_range" id="price_range">
+                                <option value="Any">Any Price Range</option>
+                                <option value="1">1 (Budget)</option>
+                                <option value="2">2 (Mid-range)</option>
+                                <option value="3">3 (Premium)</option>
+                                <option value="4">4 (Luxury)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="min_rating">Minimum Rating</label>
+                        <div class="input-wrapper select-wrapper">
+                            <i data-lucide="star"></i>
+                            <select name="min_rating" id="min_rating">
+                                <option value="Any">Any Rating</option>
+                                <option value="3.0">3.0+ ⭐</option>
+                                <option value="3.5">3.5+ ⭐</option>
+                                <option value="4.0">4.0+ ⭐</option>
+                                <option value="4.5">4.5+ ⭐</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="restaurant_type">Restaurant Type (Optional)</label>
+                        <div class="input-wrapper">
+                            <i data-lucide="store"></i>
+                            <input type="text" name="restaurant_type" id="restaurant_type" placeholder="e.g., Casual Dining">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="table_booking">Table Booking</label>
+                        <div class="input-wrapper select-wrapper">
+                            <i data-lucide="calendar"></i>
+                            <select name="table_booking" id="table_booking">
+                                <option value="Any">Any</option>
+                                <option value="Yes">Yes required</option>
+                                <option value="No">No preference</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="online_delivery">Online Delivery</label>
+                        <div class="input-wrapper select-wrapper">
+                            <i data-lucide="truck"></i>
+                            <select name="online_delivery" id="online_delivery">
+                                <option value="Any">Any</option>
+                                <option value="Yes">Yes required</option>
+                                <option value="No">No preference</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="top_n">Recommendations</label>
+                        <div class="input-wrapper">
+                            <i data-lucide="list"></i>
+                            <input type="number" name="top_n" id="top_n" value="5" min="1" max="20">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-large" style="width: 100%;" id="submit-btn">
+                    <span class="loading-spinner"></span>
+                    <span class="btn-text"><i data-lucide="search" style="vertical-align: middle; margin-right: 8px;"></i> Find My Restaurants</span>
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <section class="features container">
+        <h2>Why diners choose DineMatch</h2>
+        <p style="color:var(--muted); margin-top:8px;">Smart recommendations without the endless scrolling.</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Personalized</h3>
+                <p style="color:var(--muted); margin-top:8px;">Recommendations based on your preferences.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⭐</div>
+                <h3>Highly Rated</h3>
+                <p style="color:var(--muted); margin-top:8px;">Discover restaurants loved by other diners.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📍</div>
+                <h3>Location Smart</h3>
+                <p style="color:var(--muted); margin-top:8px;">Find options in your preferred city and locality.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Smart Matching</h3>
+                <p style="color:var(--muted); margin-top:8px;">Content-based machine learning finds relevant restaurants.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="how-it-works" id="how-it-works">
+        <div class="container" style="text-align: center;">
+            <h2>From craving to table in three steps.</h2>
+            <div class="timeline">
+                <div class="step">
+                    <div>
+                        <div class="step-num">01</div>
+                        <h3>Tell us what you like.</h3>
+                        <p style="color:var(--muted); font-size:0.875rem; margin-top:8px;">Select your cuisine, budget, and location.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div>
+                        <div class="step-num">02</div>
+                        <h3>Engine matches.</h3>
+                        <p style="color:var(--muted); font-size:0.875rem; margin-top:8px;">Our smart algorithm finds the best fits.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div>
+                        <div class="step-num">03</div>
+                        <h3>Choose your perfect spot.</h3>
+                        <p style="color:var(--muted); font-size:0.875rem; margin-top:8px;">Review details and get ready to dine.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats container" id="about">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h3>9,551+</h3>
+                <p style="color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; font-size:0.875rem;">Restaurants</p>
+            </div>
+            <div class="stat-item">
+                <h3>141</h3>
+                <p style="color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; font-size:0.875rem;">Cities</p>
+            </div>
+            <div class="stat-item">
+                <h3>Multiple</h3>
+                <p style="color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; font-size:0.875rem;">Cuisines</p>
+            </div>
+            <div class="stat-item">
+                <h3>Smart</h3>
+                <p style="color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; font-size:0.875rem;">Recommendations</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <a href="/" class="footer-brand"><i data-lucide="utensils"></i> DineMatch</a>
+                    <p style="color:#a3a3a3; max-width:250px;">"Discover restaurants made for you."</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Explore</h4>
+                    <ul>
+                        <li><a href="/" style="color:#a3a3a3;">Home</a></li>
+                        <li><a href="#find" style="color:#a3a3a3;">Find Restaurants</a></li>
+                        <li><a href="#how-it-works" style="color:#a3a3a3;">How It Works</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Technology</h4>
+                    <ul>
+                        <li style="color:#a3a3a3;">Python</li>
+                        <li style="color:#a3a3a3;">Flask</li>
+                        <li style="color:#a3a3a3;">Scikit-learn</li>
+                        <li style="color:#a3a3a3;">TF-IDF</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Built as a Cognifyz Technologies internship project.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
