@@ -120,7 +120,7 @@ def recommend_restaurants(cuisine=None, city=None, price_range=None, min_rating=
     
     filtered_df = filtered_df.copy()
     filtered_df['Recommendation Score'] = sim_scores
-    filtered_df['Match Percentage'] = (sim_scores * 100).round(1).astype(str) + "%"
+    filtered_df['Match Percentage'] = pd.Series(sim_scores * 100, index=filtered_df.index).round(1).astype(str) + "%"
     filtered_df['Recommendation Type'] = recommendation_type
     
     if (sim_scores > 0).any():
