@@ -6,7 +6,8 @@ from flask import Flask, render_template, request, jsonify
 # Startup validation
 print("Performing startup validation...")
 
-dataset_path = 'data/processed_restaurants.csv'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+dataset_path = os.path.join(BASE_DIR, 'data', 'processed_restaurants.csv')
 if not os.path.exists(dataset_path):
     print(f"CRITICAL ERROR: Dataset not found at {dataset_path}")
     sys.exit(1)

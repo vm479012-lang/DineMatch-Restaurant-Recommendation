@@ -62,7 +62,8 @@ def get_restaurant_image(cuisine, restaurant_type, restaurant_name):
                 break # We found the highest priority match!
                 
     # Find all images in that category
-    cat_dir = os.path.join("static", "images", "restaurants", selected_category)
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    cat_dir = os.path.join(BASE_DIR, "static", "images", "restaurants", selected_category)
     images = []
     if os.path.exists(cat_dir):
         images = [f for f in os.listdir(cat_dir) if f.endswith('.jpg')]

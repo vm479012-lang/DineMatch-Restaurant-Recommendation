@@ -1,11 +1,14 @@
 import pandas as pd
 import numpy as np
+import os
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # 1. Load data
 try:
-    df = pd.read_csv('data/processed_restaurants.csv')
+    df = pd.read_csv(os.path.join(BASE_DIR, 'data', 'processed_restaurants.csv'))
     
     # 3. Create a TF-IDF vectorizer
     # What TF-IDF does: 
