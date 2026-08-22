@@ -1,5 +1,6 @@
 # 🍽️ DineMatch — AI-Powered Restaurant Recommendation System
 
+# live at : https://dine-match-restaurant-recommendatio.vercel.app
 ## Overview
 DineMatch is a content-based restaurant recommendation system developed using the Cognifyz Technologies restaurant dataset. It helps users discover their perfect dining spot by analyzing restaurant attributes and matching them intelligently against user preferences.
 
@@ -133,7 +134,7 @@ gunicorn app:app
 - Real-time restaurant availability
 
 ## Author
-**Your Name**
+**jonnalagadda venkata mahesh**
 
 ## Internship
 **Cognifyz Technologies Internship**
