@@ -71,7 +71,12 @@ def get_restaurant_image(cuisine, restaurant_type, restaurant_name):
     if not images:
         return "/static/images/restaurants/general/general-1.jpg" # Safe fallback
         
+    # Re-hash with category to add more entropy
+    hash_obj = hashlib.md5(f"{restaurant_name}_{selected_category}".encode('utf-8'))
+    hash_int = int(hash_obj.hexdigest(), 16)
+    
     # Pick deterministically
+    images.sort() # Ensure consistent order across environments
     index = hash_int % len(images)
     selected_image = images[index]
     

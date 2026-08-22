@@ -3,174 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DineMatch | Your Recommendations</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Your Recommendations | DineMatch</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=3) }}">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-    
     <nav class="navbar fade-up">
         <a href="/" class="nav-brand">
-            <i data-lucide="utensils" class="brand-icon" style="color: var(--primary);"></i>
-            DineMatch
+            <i data-lucide="utensils" class="brand-icon"></i>
+            <span class="brand-dine">Dine</span><span class="brand-match">Match</span>
         </a>
+        <button class="mobile-menu-btn"><i data-lucide="menu"></i></button>
         <div class="nav-links">
             <a href="/">Home</a>
-            <a href="/#find" class="btn-primary">New Search</a>
+            <a href="/#how-it-works">How It Works</a>
+            <a href="/#about">About</a>
+            <a href="/#find" class="btn btn-primary">↻ Retry Search</a>
         </div>
     </nav>
+    
+    <div class="hero-bg-glow">
+        <div class="glow-emerald"></div>
+        <div class="glow-gold"></div>
+    </div>
 
-    <main class="container results-page fade-up" style="animation-delay: 0.1s;">
-        
-        <section class="results-header">
-            <h1>Restaurants picked for you</h1>
-            <p style="color:var(--muted); font-size:1.125rem; margin-top:8px;">Based on your preferences</p>
+    <div class="container" style="padding-top: 120px;">
+        <div class="results-header fade-up">
+            <div class="back-link">
+                <a href="/"><i data-lucide="arrow-left"></i> Modify search</a>
+            </div>
+            <h1 style="margin-top: 16px;">Restaurants picked for you</h1>
+            <p style="color: var(--muted); font-size: 1.125rem;">Based on your preferences</p>
             
-            <div class="prefs-display">
-                {% for key, val in preferences.items() %}
-                    {% if val != "Any" and key != "Requested Results" %}
-                        <span class="pref-chip">{{ val }}</span>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </section>
+            <div class="active-prefs">
+                {% if preferences['Cuisine'] != 'Any' %}
+                <span class="pref-tag">Cuisine: {{ preferences['Cuisine'] }}</span>
+                {% endif %}
+                
+                {% if preferences['City'] != 'Any' %}
+                <span class="pref-tag">City: {{ preferences['City'] }}</span>
+                {% endif %}
 
-        {% if results %}
-            <div class="results-toolbar">
-                <p><strong>{{ results|length }} recommendations found</strong></p>
-                <div class="input-wrapper select-wrapper" style="width: auto;">
-                    <select id="sort-results" style="padding: 8px 32px 8px 12px; font-weight:600;">
-                        <option value="match">Sort by: Best Match</option>
-                        <option value="rating">Sort by: Highest Rated</option>
-                        <option value="popular">Sort by: Most Popular</option>
-                    </select>
-                </div>
-            </div>
+                {% if preferences['Price Range'] != 'Any' %}
+                <span class="pref-tag">Price: {{ preferences['Price Range'] }}</span>
+                {% endif %}
 
-            <div class="results-grid">
-                {% for r in results %}
-                <div class="restaurant-card" 
-                     data-score="{{ r['Recommendation Score'] }}" 
-                     data-rating="{{ r['Aggregate rating'] }}" 
-                     data-votes="{{ r['Votes'] }}">
-                    
-                    <div class="card-img-wrapper">
-                        <!-- Dynamic food image from category -->
-                        <img src="{{ r['image'] }}" alt="{{ r['Restaurant Name'] }}" class="card-img" loading="lazy" onerror="this.onerror=null; this.src='/static/images/restaurants/fallback/fallback-1.jpg';">
-                        <div class="match-overlay">
-                            🎯 {{ r['Match Percentage'] }} Match
-                        </div>
-                    </div>
+                {% if preferences['Minimum Rating'] != 'Any' %}
+                <span class="pref-tag">Rating: {{ preferences['Minimum Rating'] }}+</span>
+                {% endif %}
 
-                    <div class="card-content">
-                        
-                        {% if r.get('Recommendation Type') == 'Alternative' %}
-                            <div class="type-badge type-alt">Alternative match</div>
-                        {% else %}
-                            <div class="type-badge type-exact">Excellent match</div>
-                        {% endif %}
-
-                        <div class="card-header">
-                            <h3>{{ r['Restaurant Name'] }}</h3>
-                            <div class="rating-box">
-                                <i data-lucide="star" style="width:14px; height:14px; fill:currentColor;"></i>
-                                {{ r['Aggregate rating'] }}
-                            </div>
-                        </div>
-
-                        <p class="cuisine-text">{{ r['Cuisines']|replace(',', ' •') }}</p>
-
-                        <div class="card-meta">
-                            <div class="meta-item">
-                                <i data-lucide="map-pin"></i>
-                                <span>{{ r['Locality'] }}, {{ r['City'] }}</span>
-                            </div>
-                            <div class="meta-item">
-                                <i data-lucide="indian-rupee"></i>
-                                <span>
-                                    {% if r['Price range'] == 1 %}₹
-                                    {% elif r['Price range'] == 2 %}₹₹
-                                    {% elif r['Price range'] == 3 %}₹₹₹
-                                    {% else %}₹₹₹₹{% endif %}
-                                </span>
-                            </div>
-                        </div>
-
-                        <p style="font-size:0.875rem; color:var(--muted); margin-bottom:12px;">Average cost for two: <strong>{{ r['Average Cost for two'] }}</strong> | Votes: <strong>{{ r['Votes'] }}</strong></p>
-
-                        <div class="card-features">
-                            <span class="feature-badge {% if r['Has Online delivery'] == 'Yes' %}enabled{% else %}disabled{% endif %}">
-                                <i data-lucide="{% if r['Has Online delivery'] == 'Yes' %}check{% else %}x{% endif %}" style="width:14px; height:14px;"></i> Online Delivery
-                            </span>
-                            <span class="feature-badge {% if r['Has Table booking'] == 'Yes' %}enabled{% else %}disabled{% endif %}">
-                                <i data-lucide="{% if r['Has Table booking'] == 'Yes' %}check{% else %}x{% endif %}" style="width:14px; height:14px;"></i> Table Booking
-                            </span>
-                        </div>
-
-                        {% if r.get('Recommendation Type') == 'Alternative' %}
-                            <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px; font-style:italic;">
-                                We couldn't find an exact match for every preference, so this restaurant matches the closest available criteria.
-                            </p>
-                        {% endif %}
-
-                        <div class="why-match">
-                            <button class="why-match-btn">
-                                Why this matches you
-                                <i data-lucide="chevron-down" style="width:16px; transition:transform 0.2s;"></i>
-                            </button>
-                            <div class="why-match-content">
-                                <ul class="why-list" style="list-style:none; padding:0;">
-                                    {% if preferences['Cuisine'] != 'Any' and preferences['Cuisine'].lower() in r['Cuisines'].lower() %}
-                                        <li><i data-lucide="check-circle-2" style="width:14px;"></i> Matches your preferred cuisine</li>
-                                    {% endif %}
-                                    {% if preferences['City'] != 'Any' and preferences['City'].lower() == r['City'].lower() %}
-                                        <li><i data-lucide="check-circle-2" style="width:14px;"></i> Matches your selected city</li>
-                                    {% endif %}
-                                    {% if preferences['Price Range'] != 'Any' and preferences['Price Range']|string == r['Price range']|string %}
-                                        <li><i data-lucide="check-circle-2" style="width:14px;"></i> Within your preferred price range</li>
-                                    {% endif %}
-                                    {% if preferences['Minimum Rating'] != 'Any' and r['Aggregate rating']|float >= preferences['Minimum Rating']|float %}
-                                        <li><i data-lucide="check-circle-2" style="width:14px;"></i> Meets your minimum rating</li>
-                                    {% endif %}
-                                    {% if preferences['Online Delivery'] == 'Yes' and r['Has Online delivery'] == 'Yes' %}
-                                        <li><i data-lucide="check-circle-2" style="width:14px;"></i> Online delivery available</li>
-                                    {% endif %}
-                                    {% if preferences['Table Booking'] == 'Yes' and r['Has Table booking'] == 'Yes' %}
-                                        <li><i data-lucide="check-circle-2" style="width:14px;"></i> Table booking available</li>
-                                    {% endif %}
-                                </ul>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            
-            <div style="text-align: center; margin-bottom: 80px;">
-                <a href="/#find" class="btn btn-secondary btn-large">Search Again</a>
-            </div>
-
-        {% else %}
-            <div class="empty-state">
-                <div class="empty-icon">🍽️</div>
-                <h2>No restaurants found</h2>
-                <p>Try adjusting your preferences and we'll look again.</p>
-                <a href="/#find" class="btn btn-primary">Change Preferences</a>
-            </div>
-        {% endif %}
-
-    </main>
-
-    <footer>
-        <div class="container">
-            <div class="footer-bottom" style="border:none;">
-                <p>DineMatch &copy; 2026</p>
+                {% if preferences['Restaurant Type'] != 'Any' %}
+                <span class="pref-tag">Type: {{ preferences['Restaurant Type'] }}</span>
+                {% endif %}
+                
+                {% if preferences['Table Booking'] != 'Any' %}
+                <span class="pref-tag">Booking: {{ preferences['Table Booking'] }}</span>
+                {% endif %}
+                
+                {% if preferences['Online Delivery'] != 'Any' %}
+                <span class="pref-tag">Delivery: {{ preferences['Online Delivery'] }}</span>
+                {% endif %}
             </div>
         </div>
-    </footer>
 
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+        <div class="results-controls fade-up" style="animation-delay: 0.1s;">
+            <p style="font-weight: 600; font-size: 1.1rem; font-family: 'Playfair Display', serif;">{{ results|length }} recommendations found</p>
+            <div class="input-wrapper select-wrapper" style="width: 200px;">
+                <select id="sort-select">
+                    <option value="match">Best Match</option>
+                    <option value="rating">Highest Rated</option>
+                    <option value="votes">Most Popular</option>
+                </select>
+            </div>
+        </div>
+
+        {% if results %}
+        <div class="results-grid fade-up" style="animation-delay: 0.2s;">
+            {% for r in results %}
+            <div class="restaurant-card">
+                <div class="card-img-wrapper">
+                    <img src="{{ r.image }}" alt="{{ r['Restaurant Name'] }}" class="card-img">
+                    <div class="match-overlay">
+                        🎯 {{ r['Match Percentage'] }}
+                    </div>
+                </div>
+                
+                <div class="card-content">
+                    {% if r['Recommendation Type'] == 'Exact Match' %}
+                        <div class="type-badge type-exact">✓ Exact Match</div>
+                    {% else %}
+                        <div class="type-badge type-alt">⚠️ Alternative match</div>
+                    {% endif %}
+                    
+                    <div class="card-header-row">
+                        <h2 class="card-title">{{ r['Restaurant Name'] }}</h2>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <p class="location"><i data-lucide="map-pin" style="color:var(--primary);"></i> {{ r['Locality'] }}, {{ r['City'] }}</p>
+                        <div class="rating-badge">⭐ {{ r['Aggregate rating'] }}</div>
+                    </div>
+                    
+                    <p class="cuisine-text">{{ r['Cuisines'] }}</p>
+                    
+                    <div class="card-meta">
+                        <div>
+                            <i data-lucide="wallet" style="color:var(--gold);"></i> Price: {{ r['Price range'] }}/4
+                            <br><span style="font-size:0.75rem; color:var(--muted);">(₹{{ r['Average Cost for two'] }} for two)</span>
+                        </div>
+                        <div>
+                            <i data-lucide="thumbs-up" style="color:var(--muted);"></i> {{ r['Votes'] }} votes
+                        </div>
+                        <div>
+                            <i data-lucide="truck" style="color:var(--primary);"></i> Delivery: 
+                            {% if r['Has Online delivery'] == 'Yes' %}✅{% else %}❌{% endif %}
+                        </div>
+                        <div>
+                            <i data-lucide="calendar" style="color:var(--primary);"></i> Table: 
+                            {% if r['Has Table booking'] == 'Yes' %}✅{% else %}❌{% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="why-match-section">
+                        <details>
+                            <summary>Why this matches you</summary>
+                            {% if r['Recommendation Type'] == 'Alternative' %}
+                                <p style="font-size: 0.875rem; color: var(--muted); margin-top: 8px;">We couldn't find an exact match for every preference, so this restaurant matches the closest available criteria.</p>
+                            {% else %}
+                                <ul style="margin-top: 8px; font-size: 0.875rem; color: var(--muted); list-style: none; padding-left: 0;">
+                                {% if preferences['Cuisine'] != 'Any' and preferences['Cuisine'].lower() in (r['Cuisines']|string).lower() %}
+                                    <li style="margin-bottom: 4px;">✓ Matches your preferred cuisine</li>
+                                {% endif %}
+                                {% if preferences['City'] != 'Any' and preferences['City'].lower() == (r['City']|string).lower() %}
+                                    <li style="margin-bottom: 4px;">✓ Matches your selected city</li>
+                                {% endif %}
+                                {% if preferences['Price Range'] != 'Any' and (preferences['Price Range']|int) == (r['Price range']|int) %}
+                                    <li style="margin-bottom: 4px;">✓ Within your preferred price range</li>
+                                {% endif %}
+                                {% if preferences['Minimum Rating'] != 'Any' and (r['Aggregate rating']|float) >= (preferences['Minimum Rating']|float) %}
+                                    <li style="margin-bottom: 4px;">✓ Meets your minimum rating</li>
+                                {% endif %}
+                                {% if preferences['Restaurant Type'] != 'Any' and preferences['Restaurant Type'].lower() in (r['Restaurant Type']|string).lower() %}
+                                    <li style="margin-bottom: 4px;">✓ Matches preferred restaurant type</li>
+                                {% endif %}
+                                {% if preferences['Online Delivery'] == 'Yes' and r['Has Online delivery'] == 'Yes' %}
+                                    <li style="margin-bottom: 4px;">✓ Online delivery available</li>
+                                {% endif %}
+                                {% if preferences['Table Booking'] == 'Yes' and r['Has Table booking'] == 'Yes' %}
+                                    <li style="margin-bottom: 4px;">✓ Table booking available</li>
+                                {% endif %}
+                                </ul>
+                            {% endif %}
+                        </details>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state fade-up">
+            <div style="font-size: 4rem; margin-bottom: 24px;">🍽️</div>
+            <h2>No restaurants found</h2>
+            <p>Try adjusting your preferences and discover more options.</p>
+            <a href="/" class="btn btn-primary" style="margin-top: 16px;">Change Preferences</a>
+        </div>
+        {% endif %}
+        
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="/#find" class="btn btn-primary btn-large">↻ Search Again</a>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js', v=2) }}"></script>
     <script>
         lucide.createIcons();
     </script>

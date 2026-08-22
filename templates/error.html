@@ -3,31 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DineMatch | Error</title>
+    <title>Error | DineMatch</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-    <nav class="navbar">
-        <a href="/" class="nav-brand">
-            <i data-lucide="utensils" class="brand-icon" style="color: var(--primary);"></i>
-            DineMatch
-        </a>
-    </nav>
-
-    <div class="container fade-up" style="animation-delay: 0.1s;">
+    <div class="container" style="display: flex; height: 100vh; align-items: center; justify-content: center;">
         <div class="empty-state">
-            <div class="empty-icon" style="color: var(--primary);">
-                <i data-lucide="alert-triangle" style="width:64px; height:64px;"></i>
-            </div>
+            <div style="font-size: 4rem; margin-bottom: 24px;">⚠️</div>
             <h2>Oops! Something went wrong</h2>
-            <p class="error-msg">{{ error_message }}</p>
-            <a href="/" class="btn btn-primary" style="margin-top:20px;">Return to Home</a>
+            <p>{{ error_message }}</p>
+            <a href="/" class="btn btn-primary" style="margin-top: 16px;">Return to Home</a>
         </div>
     </div>
-    
-    <script>
-        lucide.createIcons();
-    </script>
 </body>
 </html>
